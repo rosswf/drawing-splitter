@@ -40,5 +40,5 @@ This is my first python project so pull requests & feedback are more than welcom
 ## Acknowledgements
 
 Many thanks to:
-The contributors to PyPDF2
-The contributors to pdfplumber
+- The contributors to PyPDF2
+- The contributors to pdfplumber
