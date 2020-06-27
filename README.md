@@ -28,10 +28,13 @@ If following BS EN ISO 19650, Project Number or Originator are suggested.
 
 ## Roadmap
 
-Add optional command-line arguments for the following:
-- Specify a directory that the PDF files are located in.
-- Specify a directory to save the split PDF files.
-- Specify a region of the PDF where the drawing number can be located.
+- Add optional command-line arguments for the following:
+    - Specify a directory that the PDF files are located in.
+    - Specify a directory to save the split PDF files.
+    - Specify a region of the PDF where the drawing number can be located.
+    - Give the option to delete the original file after it has been processed.
+    - Give the option for drawings to be saved in folders  based on revision.
+- Add a config file to allow user to set defaults instead of providing command line arguments each time.
 
 ## Contributions
 
