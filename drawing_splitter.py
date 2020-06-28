@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""A tool for splitting combined drawing PDF's into single files named
+"""A tool for splitting combined drawing PDFs into seperate files named
 by drawing number.
 
 USAGE
@@ -10,11 +10,12 @@ USAGE
 """
 import re
 import os
-import sys
 import warnings
 
 import PyPDF2
 import pdfplumber
+
+import user_options
 
 
 def get_pdf_length(filename):
@@ -44,29 +45,35 @@ def get_drawing_numbers(filename, num_of_pages, drawing_number_element):
     return drawing_numbers
 
 
-def save_drawings(filename, num_of_pages, drawing_numbers):
+def save_drawings(filename, num_of_pages, drawing_numbers, output_folder):
     """Saves each page of a PDF as a single page PDF file, named after
     the drawing number."""
     with open(filename, 'rb') as pdf:
         if len(drawing_numbers):
             warnings.filterwarnings('ignore')
-            pdfReader = PyPDF2.PdfFileReader(pdf, strict=False)
+            pdf_reader = PyPDF2.PdfFileReader(pdf, strict=False)
             for page_number in range(num_of_pages):
-                pdfWriter = PyPDF2.PdfFileWriter()
-                pageObj = pdfReader.getPage(page_number)
-                pdfWriter.addPage(pageObj)
-                pdfOutputFile = open(drawing_numbers[page_number]
-                                     + '.pdf', 'wb')
-                pdfWriter.write(pdfOutputFile)
-                pdfOutputFile.close()
+                pdf_writer = PyPDF2.PdfFileWriter()
+                page = pdf_reader.getPage(page_number)
+                pdf_writer.addPage(page)
+                output_filename = drawing_numbers[page_number] + '.pdf'
+                os.makedirs(output_folder, exist_ok=True)
+                output_fullpath = os.path.join(output_folder, output_filename)
+                pdf_output_file = open(output_fullpath, 'wb')
+                pdf_writer.write(pdf_output_file)
+                pdf_output_file.close()
             print(f'Drawings saved: {len(drawing_numbers)}')
         else:
             print('No drawings could be saved.')
     warnings.filterwarnings('default')
 
 
-def get_filenames(directory=os.getcwd()):
+def get_filenames(directory):
     """Return a list of all the pdf files in a given directory."""
+    if not os.path.isdir(directory):
+        print(f'Folder {directory} does not exist.\n'
+              'Using current directory instead.\n')
+        directory = os.getcwd()
     pdf_files = []
     for filename in os.listdir(directory):
         if filename.endswith('.pdf'):
@@ -75,12 +82,10 @@ def get_filenames(directory=os.getcwd()):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        print('Usage: python drawing_splitter.py dwg-number-element')
-        sys.exit()
-    drawing_number_element = sys.argv[1]
-    pdf_files = get_filenames()
+    args = user_options.parser.parse_args()
     print('Drawing Splitter\n')
+    drawing_number_element = args.dwg_number_element
+    pdf_files = get_filenames(args.input)
     print(f'Total files to process: {len(pdf_files)}')
     print(f'Using drawing number element: {drawing_number_element}\n')
     for filename in pdf_files:
@@ -88,6 +93,6 @@ if __name__ == '__main__':
         num_of_pages = get_pdf_length(filename)
         drawing_numbers = get_drawing_numbers(filename, num_of_pages,
                                               drawing_number_element)
-        save_drawings(filename, num_of_pages, drawing_numbers)
+        save_drawings(filename, num_of_pages, drawing_numbers, args.output)
         print()
     print(f'Finished processing {len(pdf_files)} files.')

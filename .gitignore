@@ -1,0 +1,6 @@
+# Byte-compiled / optimised / DLL files
+__pycache__/
+*.py[cod]
+
+# Files used for testing
+*.pdf

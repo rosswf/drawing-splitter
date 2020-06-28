@@ -1,6 +1,6 @@
 # Drawing Splitter
 
-A tool for splitting combined drawing PDFs into single files named by drawing number.
+A tool for splitting combined drawing PDFs into seperate files named by drawing number.
 
 ## Setup
 
@@ -29,8 +29,8 @@ If following BS EN ISO 19650, Project Number or Originator are suggested.
 ## Roadmap
 
 - Add optional command-line arguments for the following:
-    - Specify a directory that the PDF files are located in.
-    - Specify a directory to save the split PDF files.
+    - ~~Specify a directory that the PDF files are located in.~~ **Now implemented.**
+    - ~~Specify a directory to save the split PDF files.~~ **Now implemented.**
     - Specify a region of the PDF where the drawing number can be located.
     - Give the option to delete the original file after it has been processed.
     - Give the option for drawings to be saved in folders  based on revision.
