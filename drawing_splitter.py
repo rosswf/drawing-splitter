@@ -25,7 +25,7 @@ def get_pdf_length(filename):
         return num_of_pages
 
 
-def get_drawing_numbers(filename, num_of_pages, drawing_number_element):
+def get_drawing_numbers(filename, num_of_pages, number_element):
     """Return a list of drawing numbers, read from each page of a PDF."""
     drawing_numbers = []
     for page_number in range(num_of_pages):
@@ -33,7 +33,7 @@ def get_drawing_numbers(filename, num_of_pages, drawing_number_element):
             page = pdf.pages[page_number]
             area = page.within_bbox((1000, 650, 1190, 800))
             text = area.extract_text()
-            search_string = re.compile(r'.*' + drawing_number_element + '.*')
+            search_string = re.compile(r'.*' + number_element + '.*')
             try:
                 drawing_number = re.search(search_string, text).group()
                 print(f'\tPage {page_number + 1} of '
@@ -81,18 +81,28 @@ def get_filenames(directory):
     return pdf_files
 
 
+def get_page_size(filename):
+    """Return the height and width of pages in the PDF, assumes all pages are
+    the same size."""
+    page_size = {'page_height': 0, 'page_width': 0}
+    with pdfplumber.open(filename) as pdf:
+        page_size['page_height'] = int(pdf.pages[0].height)
+        page_size['page_width'] = int(pdf.pages[0].width)
+    return page_size
+
+
 if __name__ == '__main__':
     args = user_options.parser.parse_args()
     print('Drawing Splitter\n')
-    drawing_number_element = args.dwg_number_element
+    number_element = args.dwg_number_element
     pdf_files = get_filenames(args.input)
     print(f'Total files to process: {len(pdf_files)}')
-    print(f'Using drawing number element: {drawing_number_element}\n')
+    print(f'Using drawing number element: {number_element}\n')
     for filename in pdf_files:
         print(f'Processing file: {os.path.basename(filename)}...')
         num_of_pages = get_pdf_length(filename)
         drawing_numbers = get_drawing_numbers(filename, num_of_pages,
-                                              drawing_number_element)
+                                              number_element)
         save_drawings(filename, num_of_pages, drawing_numbers, args.output)
         print()
     print(f'Finished processing {len(pdf_files)} files.')
