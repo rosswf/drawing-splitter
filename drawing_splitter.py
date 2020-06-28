@@ -36,9 +36,11 @@ def get_drawing_numbers(filename, num_of_pages, number_element, region):
             page = pdf.pages[page_number]
             area = page.within_bbox(region)
             text = area.extract_text()
-            search_string = re.compile(r'.*' + number_element + '.*')
+            search_str = re.compile(r'[\w\d\-\(\)]*'
+                                    + number_element
+                                    + r'[\w\d\-\(\)]*')
             try:
-                drawing_number = re.search(search_string, text).group()
+                drawing_number = re.search(search_str, text).group()
                 print(f'\tPage {page_number + 1} of '
                       f'{num_of_pages}: {drawing_number}')
                 drawing_numbers.append(drawing_number)
