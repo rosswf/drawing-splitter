@@ -1,7 +1,7 @@
 import argparse
 
-parser = argparse.ArgumentParser(description="""A tool for splitting combined
-                                             drawing PDFs into seperate files
+parser = argparse.ArgumentParser(description="""A tool for splitting multi-page
+                                             PDF drawings into seperate files
                                              named by drawing number.""")
 parser.add_argument('dwg_number_element',
                     metavar='dwg-number-element',
@@ -11,11 +11,23 @@ parser.add_argument('-i',
                     '--input',
                     metavar='FOLDER',
                     type=str,
-                    help='Folder where the PDF files are located',
+                    help="""Folder where the original PDF files are located
+                         - DEFAULT: Current folder""",
                     default='.')
 parser.add_argument('-o',
                     '--output',
                     metavar='FOLDER',
                     type=str,
-                    help='Folder to save the PDF files in',
+                    help="""Folder to save the PDF files in
+                         - DEFAULT: Current folder""",
                     default='.')
+parser.add_argument('-p',
+                    '--preset',
+                    metavar='REGION',
+                    type=str,
+                    help="""Preset region of PDF containing drawing number.
+                            Choose from: 'top-left', 'top-right', 'bot-left',
+                            'bot-right', 'all' - DEFAULT: bot-right""",
+                    default='bot-right',
+                    choices=['top-left', 'top-right', 'bot-left', 'bot-right',
+                             'all'])

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""A tool for splitting combined drawing PDFs into seperate files named
+"""A tool for splitting multi-page PDF drawings into seperate files named
 by drawing number.
 
 USAGE
@@ -7,6 +7,9 @@ USAGE
 
     Where dwg-number-element is a part of the drawing number to be
     searched for.
+
+    See python3 drawing_splitter.py --help for full usage options.
+
 """
 import re
 import os
@@ -25,13 +28,13 @@ def get_pdf_length(filename):
         return num_of_pages
 
 
-def get_drawing_numbers(filename, num_of_pages, number_element):
+def get_drawing_numbers(filename, num_of_pages, number_element, region):
     """Return a list of drawing numbers, read from each page of a PDF."""
     drawing_numbers = []
     for page_number in range(num_of_pages):
         with pdfplumber.open(filename) as pdf:
             page = pdf.pages[page_number]
-            area = page.within_bbox((1000, 650, 1190, 800))
+            area = page.within_bbox(region)
             text = area.extract_text()
             search_string = re.compile(r'.*' + number_element + '.*')
             try:
@@ -84,11 +87,10 @@ def get_filenames(directory):
 def get_page_size(filename):
     """Return the height and width of pages in the PDF, assumes all pages are
     the same size."""
-    page_size = {'page_height': 0, 'page_width': 0}
     with pdfplumber.open(filename) as pdf:
-        page_size['page_height'] = int(pdf.pages[0].height)
-        page_size['page_width'] = int(pdf.pages[0].width)
-    return page_size
+        page_height = int(pdf.pages[0].height)
+        page_width = int(pdf.pages[0].width)
+    return (page_height, page_width)
 
 
 if __name__ == '__main__':
@@ -97,12 +99,25 @@ if __name__ == '__main__':
     number_element = args.dwg_number_element
     pdf_files = get_filenames(args.input)
     print(f'Total files to process: {len(pdf_files)}')
-    print(f'Using drawing number element: {number_element}\n')
+    print(f'Using drawing number element: {number_element}')
+    print(f'Checking region: {args.preset}\n')
     for filename in pdf_files:
+        page_size = get_page_size(filename)
+        page_height = page_size[0]
+        page_width = page_size[1]
+        regions = {'top-left': (0, 0, page_width * 0.2, page_height * 0.5),
+                   'top-right': (page_width * 0.8, 0,
+                                 page_width, page_height * 0.5),
+                   'bot-left': (0, page_height * 0.5, page_width * 0.2,
+                                page_height),
+                   'bot-right': (page_width * 0.8, page_height * 0.5,
+                                 page_width, page_height),
+                   'all': (0, 0, page_width, page_height)}
         print(f'Processing file: {os.path.basename(filename)}...')
         num_of_pages = get_pdf_length(filename)
         drawing_numbers = get_drawing_numbers(filename, num_of_pages,
-                                              number_element)
+                                              number_element,
+                                              regions[args.preset])
         save_drawings(filename, num_of_pages, drawing_numbers, args.output)
         print()
     print(f'Finished processing {len(pdf_files)} files.')
