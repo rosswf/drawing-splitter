@@ -34,7 +34,7 @@ See `python3 drawing_splitter.py --help` for full usage options.
     - Specify a region of the PDF where the drawing number is located.
         - ~~Preset regions for top left, top right, bottom left, bottom right.~~ **Now implemented.**
         - User specified custom region.
-    - Give the option to delete the original file after it has been processed.
+    - ~~Give the option to delete the original file after it has been processed.~~ **Now implemented.**
     - Give the option for drawings to be saved in folders  based on revision.
 - Add a config file to allow user to set defaults instead of providing command line arguments each time.
 

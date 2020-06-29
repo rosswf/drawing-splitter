@@ -53,9 +53,9 @@ def get_drawing_numbers(filename, num_of_pages, number_element, region):
 def save_drawings(filename, num_of_pages, drawing_numbers, output_folder):
     """Saves each page of a PDF as a single page PDF file, named after
     the drawing number."""
+    warnings.filterwarnings('ignore')
     with open(filename, 'rb') as pdf:
         if len(drawing_numbers):
-            warnings.filterwarnings('ignore')
             pdf_reader = PyPDF2.PdfFileReader(pdf, strict=False)
             for page_number in range(num_of_pages):
                 pdf_writer = PyPDF2.PdfFileWriter()
@@ -95,6 +95,12 @@ def get_page_size(filename):
     return (page_height, page_width)
 
 
+def delete_file(filename):
+    """Delete a file given its filename."""
+    os.unlink(filename)
+    print(f'Deleted file: {os.path.basename(filename)}')
+
+
 if __name__ == '__main__':
     args = user_options.parser.parse_args()
     print('Drawing Splitter\n')
@@ -121,5 +127,7 @@ if __name__ == '__main__':
                                               number_element,
                                               regions[args.preset])
         save_drawings(filename, num_of_pages, drawing_numbers, args.output)
+        if args.delete:
+            delete_file(filename)
         print()
     print(f'Finished processing {len(pdf_files)} files.')
