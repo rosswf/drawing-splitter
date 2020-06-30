@@ -48,7 +48,7 @@ def get_drawing_numbers(filename, num_of_pages, number_element, region):
                 print(f'\tPage {page_number + 1} of '
                       f'{num_of_pages}: Drawing number not found. '
                       'Manually rename file.')
-                drawing_numbers.append(f'drawing_{page_number +1}')
+                drawing_numbers.append(f'drawing_{page_number + 1}')
     return drawing_numbers
 
 
@@ -57,23 +57,18 @@ def save_drawings(filename, num_of_pages, drawing_numbers, output_folder):
     the drawing number."""
     warnings.filterwarnings('ignore')
     with open(filename, 'rb') as pdf:
-        if len(drawing_numbers):
-            pdf_reader = PyPDF2.PdfFileReader(pdf, strict=False)
-            for page_number in range(num_of_pages):
-                if drawing_numbers[page_number] is None:
-                    continue
-                pdf_writer = PyPDF2.PdfFileWriter()
-                page = pdf_reader.getPage(page_number)
-                pdf_writer.addPage(page)
-                output_filename = drawing_numbers[page_number] + '.pdf'
-                os.makedirs(output_folder, exist_ok=True)
-                output_fullpath = os.path.join(output_folder, output_filename)
-                pdf_output_file = open(output_fullpath, 'wb')
-                pdf_writer.write(pdf_output_file)
-                pdf_output_file.close()
-            print(f'Drawings saved: {len(drawing_numbers)}')
-        else:
-            print('No drawings could be saved.')
+        pdf_reader = PyPDF2.PdfFileReader(pdf, strict=False)
+        for page_number in range(num_of_pages):
+            pdf_writer = PyPDF2.PdfFileWriter()
+            page = pdf_reader.getPage(page_number)
+            pdf_writer.addPage(page)
+            output_filename = drawing_numbers[page_number] + '.pdf'
+            os.makedirs(output_folder, exist_ok=True)
+            output_fullpath = os.path.join(output_folder, output_filename)
+            pdf_output_file = open(output_fullpath, 'wb')
+            pdf_writer.write(pdf_output_file)
+            pdf_output_file.close()
+        print(f'Drawings saved: {len(drawing_numbers)}')
     warnings.filterwarnings('default')
 
 
