@@ -46,7 +46,9 @@ def get_drawing_numbers(filename, num_of_pages, number_element, region):
                 drawing_numbers.append(drawing_number)
             except (TypeError, AttributeError):
                 print(f'\tPage {page_number + 1} of '
-                      f'{num_of_pages}: invalid drawing')
+                      f'{num_of_pages}: Drawing number not found. '
+                      'Manually rename file.')
+                drawing_numbers.append(f'drawing_{page_number +1}')
     return drawing_numbers
 
 
@@ -58,6 +60,8 @@ def save_drawings(filename, num_of_pages, drawing_numbers, output_folder):
         if len(drawing_numbers):
             pdf_reader = PyPDF2.PdfFileReader(pdf, strict=False)
             for page_number in range(num_of_pages):
+                if drawing_numbers[page_number] is None:
+                    continue
                 pdf_writer = PyPDF2.PdfFileWriter()
                 page = pdf_reader.getPage(page_number)
                 pdf_writer.addPage(page)
