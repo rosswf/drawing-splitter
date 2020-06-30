@@ -48,7 +48,8 @@ def get_drawing_numbers(filename, num_of_pages, number_element, region):
                 print(f'\tPage {page_number + 1} of '
                       f'{num_of_pages}: Drawing number not found. '
                       'Manually rename file.')
-                drawing_numbers.append(f'drawing_{page_number + 1}')
+                drawing_numbers.append(f'{os.path.basename(filename)[:-4]}_'
+                                       f'{page_number + 1}')
     return drawing_numbers
 
 
