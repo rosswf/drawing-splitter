@@ -108,7 +108,10 @@ if __name__ == '__main__':
     pdf_files = get_filenames(args.input)
     print(f'Total files to process: {len(pdf_files)}')
     print(f'Using drawing number element: {number_element}')
-    print(f'Checking region: {args.preset}\n')
+    if args.custom is not None:
+        print(f'Checking region: {tuple(args.custom)}\n')
+    else:
+        print(f'Checking region: {args.preset}\n')
     for filename in pdf_files:
         page_size = get_page_size(filename)
         page_height = page_size[0]
@@ -123,9 +126,14 @@ if __name__ == '__main__':
                    'all': (0, 0, page_width, page_height)}
         print(f'Processing file: {os.path.basename(filename)}...')
         num_of_pages = get_pdf_length(filename)
+        if args.custom is not None:
+            region = 'custom'
+            regions['custom'] = tuple(args.custom)
+        else:
+            region = args.preset
         drawing_numbers = get_drawing_numbers(filename, num_of_pages,
                                               number_element,
-                                              regions[args.preset])
+                                              regions[region])
         save_drawings(filename, num_of_pages, drawing_numbers, args.output)
         if args.delete:
             delete_file(filename)

@@ -12,14 +12,14 @@ parser.add_argument('-i',
                     metavar='FOLDER',
                     type=str,
                     help="""Folder where the original PDF files are located
-                             - DEFAULT: Current folder""",
+                         (DEFAULT: Current folder)""",
                     default='.')
 parser.add_argument('-o',
                     '--output',
                     metavar='FOLDER',
                     type=str,
                     help="""Folder to save the PDF files in
-                             - DEFAULT: Current folder""",
+                         (DEFAULT: Current folder)""",
                     default='.')
 parser.add_argument('-d',
                     '--delete',
@@ -32,16 +32,15 @@ region_group.add_argument('-p',
                           type=str,
                           help="""Preset region of PDF containing drawing
                                number. Choose from: 'top-left', 'top-right',
-                               'bot-left', 'bot-right', 'all' 
+                               'bot-left', 'bot-right', 'all'
                                (DEFAULT: bot-right)""",
                           default='bot-right',
                           choices=['top-left', 'top-right', 'bot-left',
-                                   'bot-right','all'])
+                                   'bot-right', 'all'])
 region_group.add_argument('-c',
                           '--custom',
                           metavar=('x0', 'y0', 'x1', 'y1'),
                           type=int,
-                          help="""Custom region of PDF contaiting drawing
-                               number. x0, y0, x1, y1""",
+                          help="""Custom region of PDF containing drawing
+                               number""",
                           nargs=4)
-
