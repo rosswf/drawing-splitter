@@ -21,18 +21,27 @@ parser.add_argument('-o',
                     help="""Folder to save the PDF files in
                              - DEFAULT: Current folder""",
                     default='.')
-parser.add_argument('-p',
-                    '--preset',
-                    metavar='REGION',
-                    type=str,
-                    help="""Preset region of PDF containing drawing number.
-                            Choose from: 'top-left', 'top-right', 'bot-left',
-                            'bot-right', 'all'
-                             - DEFAULT: bot-right""",
-                    default='bot-right',
-                    choices=['top-left', 'top-right', 'bot-left', 'bot-right',
-                             'all'])
 parser.add_argument('-d',
                     '--delete',
                     help="""Delete original files after processing""",
                     action='store_true')
+region_group = parser.add_mutually_exclusive_group()
+region_group.add_argument('-p',
+                          '--preset',
+                          metavar='REGION',
+                          type=str,
+                          help="""Preset region of PDF containing drawing
+                               number. Choose from: 'top-left', 'top-right',
+                               'bot-left', 'bot-right', 'all' 
+                               (DEFAULT: bot-right)""",
+                          default='bot-right',
+                          choices=['top-left', 'top-right', 'bot-left',
+                                   'bot-right','all'])
+region_group.add_argument('-c',
+                          '--custom',
+                          metavar=('x0', 'y0', 'x1', 'y1'),
+                          type=int,
+                          help="""Custom region of PDF contaiting drawing
+                               number. x0, y0, x1, y1""",
+                          nargs=4)
+
