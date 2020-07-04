@@ -27,7 +27,7 @@ See `python3 drawing_splitter.py --help` for full usage options.
 - Text extraction can be quite slow depending on the PDF.
 
 ## Roadmap
-
+### v1.0 release
 - ~~Add optional command-line arguments for the following:~~ **Now implemented.**
     - ~~Specify a directory that the PDF files are located in.~~ **Now implemented.**
     - ~~Specify a directory to save the seperated PDF files.~~ **Now implemented.**
@@ -36,7 +36,8 @@ See `python3 drawing_splitter.py --help` for full usage options.
         - ~~User specified custom region.~~ **Now implemented.**
     - ~~Give the option to delete the original file after it has been processed.~~ **Now implemented.**
     - ~~Give the option for drawings to be saved in folders  based on revision.~~ **Now implemented.**
-- Add a config file to allow user to set defaults instead of providing command line arguments each time.
+- ~~Add a config file to allow user to set defaults instead of providing command line arguments each time.~~ **Now implemented.**
+- Improve readme/documentation.
 
 ## Contributions
 
