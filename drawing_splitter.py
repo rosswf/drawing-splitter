@@ -28,7 +28,7 @@ def get_pdf_length(filename):
         return num_of_pages
 
 
-def get_drawing_numbers(filename, num_of_pages, number_element, region):
+def get_dwg_info(filename, num_of_pages, number_element, region, rev):
     """Return a list of drawing numbers, read from each page of a PDF."""
     drawing_numbers = []
     for page_number in range(num_of_pages):
@@ -41,19 +41,27 @@ def get_drawing_numbers(filename, num_of_pages, number_element, region):
                                     + r'[\w\d\-\(\)]*')
             try:
                 drawing_number = re.search(search_str, text).group()
-                print(f'\tPage {page_number + 1} of '
-                      f'{num_of_pages}: {drawing_number}')
-                drawing_numbers.append(drawing_number)
+                print(f'\n\tPage {page_number + 1} of '
+                      f'{num_of_pages}: {drawing_number}', end=' ')
             except (TypeError, AttributeError):
-                print(f'\tPage {page_number + 1} of '
+                drawing_number = f'{os.path.basename(filename)[:-4]}' \
+                                 + f'_{page_number + 1}'
+                print(f'\n\tPage {page_number + 1} of '
                       f'{num_of_pages}: Drawing number not found. '
-                      'Manually rename file.')
-                drawing_numbers.append(f'{os.path.basename(filename)[:-4]}_'
-                                       f'{page_number + 1}')
+                      'Manually rename file.', end=' ')
+            drawing_numbers.append({drawing_number: 'NOREV'})
+            if rev:
+                search_str = re.compile(r'[CP]\d\d')
+                try:
+                    rev_number = re.search(search_str, text).group()
+                    drawing_numbers[page_number][drawing_number] = rev_number
+                    print(f'{rev_number}', end='')
+                except (TypeError, AttributeError):
+                    print(f'Revision not found.', end='')
     return drawing_numbers
 
 
-def save_drawings(filename, num_of_pages, drawing_numbers, output_folder):
+def save_drawings(filename, num_of_pages, drawing_numbers, output_folder, rev):
     """Saves each page of a PDF as a single page PDF file, named after
     the drawing number."""
     warnings.filterwarnings('ignore')
@@ -63,13 +71,18 @@ def save_drawings(filename, num_of_pages, drawing_numbers, output_folder):
             pdf_writer = PyPDF2.PdfFileWriter()
             page = pdf_reader.getPage(page_number)
             pdf_writer.addPage(page)
-            output_filename = drawing_numbers[page_number] + '.pdf'
-            os.makedirs(output_folder, exist_ok=True)
-            output_fullpath = os.path.join(output_folder, output_filename)
+            (drawing_number, revision), = drawing_numbers[page_number].items()
+            output_filename = drawing_number + '.pdf'
+            if rev:
+                output_actual = os.path.join(output_folder, revision)
+            else:
+                output_actual = output_folder
+            os.makedirs(output_actual, exist_ok=True)
+            output_fullpath = os.path.join(output_actual, output_filename)
             pdf_output_file = open(output_fullpath, 'wb')
             pdf_writer.write(pdf_output_file)
             pdf_output_file.close()
-        print(f'Drawings saved: {len(drawing_numbers)}')
+        print(f'\nDrawings saved: {len(drawing_numbers)}')
     warnings.filterwarnings('default')
 
 
@@ -124,17 +137,17 @@ if __name__ == '__main__':
                    'bot-right': (page_width * 0.8, page_height * 0.5,
                                  page_width, page_height),
                    'all': (0, 0, page_width, page_height)}
-        print(f'Processing file: {os.path.basename(filename)}...')
+        print(f'Processing file: {os.path.basename(filename)}...', end='')
         num_of_pages = get_pdf_length(filename)
         if args.custom is not None:
             region = 'custom'
             regions['custom'] = tuple(args.custom)
         else:
             region = args.preset
-        drawing_numbers = get_drawing_numbers(filename, num_of_pages,
-                                              number_element,
-                                              regions[region])
-        save_drawings(filename, num_of_pages, drawing_numbers, args.output)
+        drawing_numbers = get_dwg_info(filename, num_of_pages, number_element,
+                                       regions[region], args.revision)
+        save_drawings(filename, num_of_pages, drawing_numbers, args.output,
+                      args.revision)
         if args.delete:
             delete_file(filename)
         print()

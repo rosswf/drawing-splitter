@@ -25,6 +25,10 @@ parser.add_argument('-d',
                     '--delete',
                     help="""Delete original files after processing""",
                     action='store_true')
+parser.add_argument('-r',
+                    '--revision',
+                    help="""Save drawings in folders by revision""",
+                    action='store_true')
 region_group = parser.add_mutually_exclusive_group()
 region_group.add_argument('-p',
                           '--preset',
