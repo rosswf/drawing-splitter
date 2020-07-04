@@ -28,14 +28,14 @@ See `python3 drawing_splitter.py --help` for full usage options.
 
 ## Roadmap
 
-- Add optional command-line arguments for the following:
+- ~~Add optional command-line arguments for the following:~~ **Now implemented.**
     - ~~Specify a directory that the PDF files are located in.~~ **Now implemented.**
     - ~~Specify a directory to save the seperated PDF files.~~ **Now implemented.**
-    - Specify a region of the PDF where the drawing number is located.
+    - ~~Specify a region of the PDF where the drawing number is located.~~ **Now implemented.**
         - ~~Preset regions for top left, top right, bottom left, bottom right.~~ **Now implemented.**
         - ~~User specified custom region.~~ **Now implemented.**
     - ~~Give the option to delete the original file after it has been processed.~~ **Now implemented.**
-    - Give the option for drawings to be saved in folders  based on revision.
+    - ~~Give the option for drawings to be saved in folders  based on revision.~~ **Now implemented.**
 - Add a config file to allow user to set defaults instead of providing command line arguments each time.
 
 ## Contributions
