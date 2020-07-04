@@ -18,8 +18,6 @@ import warnings
 import PyPDF2
 import pdfplumber
 
-import user_options
-
 
 def get_pdf_length(filename):
     """Return the number of pages of a PDF given it's file name."""
@@ -57,7 +55,7 @@ def get_dwg_info(filename, num_of_pages, number_element, region, rev):
                     drawing_numbers[page_number][drawing_number] = rev_number
                     print(f'{rev_number}', end='')
                 except (TypeError, AttributeError):
-                    print(f'Revision not found.', end='')
+                    print('Revision not found.', end='')
     return drawing_numbers
 
 
@@ -77,7 +75,10 @@ def save_drawings(filename, num_of_pages, drawing_numbers, output_folder, rev):
                 output_actual = os.path.join(output_folder, revision)
             else:
                 output_actual = output_folder
-            os.makedirs(output_actual, exist_ok=True)
+            try:
+                os.makedirs(output_actual, exist_ok=True)
+            except FileNotFoundError:
+                output_actual = '.'
             output_fullpath = os.path.join(output_actual, output_filename)
             pdf_output_file = open(output_fullpath, 'wb')
             pdf_writer.write(pdf_output_file)
@@ -115,6 +116,7 @@ def delete_file(filename):
 
 
 if __name__ == '__main__':
+    import user_options
     args = user_options.parser.parse_args()
     print('Drawing Splitter\n')
     number_element = args.dwg_number_element
@@ -123,6 +125,8 @@ if __name__ == '__main__':
     print(f'Using drawing number element: {number_element}')
     if args.custom is not None:
         print(f'Checking region: {tuple(args.custom)}\n')
+    elif args.preset not in ['top-left', 'top-right', 'bot-left', 'bot-right']:
+        print('Valid region not given. Checking: bot-right\n')
     else:
         print(f'Checking region: {args.preset}\n')
     for filename in pdf_files:
@@ -142,6 +146,8 @@ if __name__ == '__main__':
         if args.custom is not None:
             region = 'custom'
             regions['custom'] = tuple(args.custom)
+        elif args.preset not in regions:
+            region = 'bot-right'
         else:
             region = args.preset
         drawing_numbers = get_dwg_info(filename, num_of_pages, number_element,
