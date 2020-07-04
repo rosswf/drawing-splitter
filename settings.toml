@@ -1,0 +1,11 @@
+# settings.toml for drawing_splitter.py
+
+# Set defaults for usage
+# CLI arguments will override the defaults set here
+
+dwg_number_element = 'PROJECT'
+input_folder = '.'
+output_folder = '.'
+delete = false
+revision = false
+region = 'bot-right'
