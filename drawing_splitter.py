@@ -28,7 +28,7 @@ def get_pdf_length(filename):
         return num_of_pages
 
 
-def get_dwg_info(filename, num_of_pages, number_element, region, rev=False):
+def get_dwg_info(filename, num_of_pages, number_element, region, rev):
     """Return a list of drawing numbers, read from each page of a PDF."""
     drawing_numbers = []
     for page_number in range(num_of_pages):
@@ -49,7 +49,7 @@ def get_dwg_info(filename, num_of_pages, number_element, region, rev=False):
                 print(f'\n\tPage {page_number + 1} of '
                       f'{num_of_pages}: Drawing number not found. '
                       'Manually rename file.', end=' ')
-            drawing_numbers.append({drawing_number: None})
+            drawing_numbers.append({drawing_number: 'NOREV'})
             if rev:
                 search_str = re.compile(r'[CP]\d\d')
                 try:
@@ -61,7 +61,7 @@ def get_dwg_info(filename, num_of_pages, number_element, region, rev=False):
     return drawing_numbers
 
 
-def save_drawings(filename, num_of_pages, drawing_numbers, output_folder):
+def save_drawings(filename, num_of_pages, drawing_numbers, output_folder, rev):
     """Saves each page of a PDF as a single page PDF file, named after
     the drawing number."""
     warnings.filterwarnings('ignore')
@@ -71,10 +71,14 @@ def save_drawings(filename, num_of_pages, drawing_numbers, output_folder):
             pdf_writer = PyPDF2.PdfFileWriter()
             page = pdf_reader.getPage(page_number)
             pdf_writer.addPage(page)
-            (drawing_number, rev), = drawing_numbers[page_number].items()
+            (drawing_number, revision), = drawing_numbers[page_number].items()
             output_filename = drawing_number + '.pdf'
-            os.makedirs(output_folder, exist_ok=True)
-            output_fullpath = os.path.join(output_folder, output_filename)
+            if rev:
+                output_actual = os.path.join(output_folder, revision)
+            else:
+                output_actual = output_folder
+            os.makedirs(output_actual, exist_ok=True)
+            output_fullpath = os.path.join(output_actual, output_filename)
             pdf_output_file = open(output_fullpath, 'wb')
             pdf_writer.write(pdf_output_file)
             pdf_output_file.close()
@@ -141,8 +145,9 @@ if __name__ == '__main__':
         else:
             region = args.preset
         drawing_numbers = get_dwg_info(filename, num_of_pages, number_element,
-                                       regions[region], rev=args.revision)
-        save_drawings(filename, num_of_pages, drawing_numbers, args.output)
+                                       regions[region], args.revision)
+        save_drawings(filename, num_of_pages, drawing_numbers, args.output,
+                      args.revision)
         if args.delete:
             delete_file(filename)
         print()
