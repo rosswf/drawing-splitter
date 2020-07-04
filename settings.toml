@@ -3,9 +3,14 @@
 # Set defaults for usage
 # CLI arguments will override the defaults set here
 
-dwg_number_element = 'PROJECT'
-input_folder = '.'
-output_folder = '.'
-delete = false
-revision = false
-region = 'bot-right'
+dwg_number_element = 'PROJECT'  # Part of drawing number to be searched for
+input_folder = '.'              # Folder containing PDFs to be processed
+output_folder = '.'             # Folder to save drawings to
+
+# The following values must be true or false
+delete = false                  # Delete file after processing
+revision = false                # Save in folders based on revision number
+
+# Preset region
+# If a custom region is desired, please use the command line options
+region = 'bot-right'            # Choices: 'top-left', 'top-right', 'bot-left', bot-right'

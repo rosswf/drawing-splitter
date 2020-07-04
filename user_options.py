@@ -1,7 +1,26 @@
 import argparse
 import toml
 
-settings = toml.load('settings.toml')
+
+DEFAULTS = {'dwg_number_element': 'PROJECT',
+            'input_folder': '.',
+            'output_folder': '.',
+            'delete': False,
+            'revision': False,
+            'region': 'bot-right'}
+
+try:
+    settings = toml.load('settings.toml')
+except FileNotFoundError:
+    with open('settings.toml', 'w') as settings_file:
+        settings_file.write(toml.dumps(DEFAULTS))
+    settings = toml.load('settings.toml')
+    print('WARNING: Settings file does not exist.')
+    print('WARNING: Creating new settings file using DEFAULTS.')
+except toml.decoder.TomlDecodeError:
+    print('WARNING: Invalid settings file. Please ensure all options are set.')
+    print('WARNING: Using DEFAULTS.\n')
+    settings = DEFAULTS
 
 parser = argparse.ArgumentParser(description="""A tool for splitting multi-page
                                              PDF drawings into seperate files
