@@ -3,6 +3,7 @@
 # GUI Interface for drawing_splitter.py using tkinter
 import os
 import threading
+import time
 
 from tkinter import *
 from tkinter.ttk import *
@@ -43,12 +44,14 @@ def save_config():
 
 # TODO: Split drawings (Need to refactor drawing_splitter.py DRY)
 def split_drawings():
-    print('Drawing Splitter\n')
+    progress_bar.grid(row=8, column=0, columnspan=6, pady=5)
+    progress_bar.start(50)
+    #print('Drawing Splitter\n')
     number_element = string_dwg_number.get()
     pdf_files = drawing_splitter.get_filenames(string_input_folder.get())
-    print(f'Total files to process: {len(pdf_files)}')
-    print(f'Using drawing number element: {number_element}')
-    print(f'Checking region: {string_region.get()}\n')
+    #print(f'Total files to process: {len(pdf_files)}')
+    #print(f'Using drawing number element: {number_element}')
+    #print(f'Checking region: {string_region.get()}\n')
     for filename in pdf_files:
         page_size = drawing_splitter.get_page_size(filename)
         page_height = page_size[0]
@@ -61,7 +64,7 @@ def split_drawings():
                    'bot-right': (page_width * 0.8, page_height * 0.5,
                                  page_width, page_height),
                    'all': (0, 0, page_width, page_height)}
-        print(f'Processing file: {os.path.basename(filename)}...', end='')
+        string_status.set(f'Processing file: {os.path.basename(filename)}...')
         num_of_pages = drawing_splitter.get_pdf_length(filename)
         region = string_region.get()
         if string_revision.get() == "Yes":
@@ -75,7 +78,9 @@ def split_drawings():
         if string_delete.get() == "Yes":
             drawing_splitter.delete_file(filename)
         print()
-    print(f'Finished processing {len(pdf_files)} files.')
+    string_status.set(f'Finished processing {len(pdf_files)} files.')
+    progress_bar.stop()
+    progress_bar.grid_forget()
 
 def save_and_split():
     save_config()
@@ -83,7 +88,7 @@ def save_and_split():
 
 # Create window
 window = Tk()
-window.geometry('500x320')
+window.geometry('420x360')
 window.resizable(False, False)
 window.title("Drawing Splitter")
 
@@ -165,5 +170,16 @@ option_region.grid(row=7, column=1, sticky='w')
 # Start Button
 button_start = Button(master=input_frame, text='Split!', command=save_and_split)
 button_start.grid(row=7, column=5, sticky="e")
+
+# Status label
+label_status = Label(master=input_frame, text='Status:', font=('Calibri', 10, 'bold'))
+label_status.grid(row=9, column=0, sticky='e', pady=5)
+string_status = StringVar()
+string_status.set('Not Running')
+label_actual_status = Label(master=input_frame, textvariable=string_status)
+label_actual_status.grid(row=9, column=1, columnspan=5, sticky='w')
+
+# Add progress bar
+progress_bar = Progressbar(master=input_frame, orient='horizontal', length=410, mode='indeterminate')
 
 window.mainloop()
