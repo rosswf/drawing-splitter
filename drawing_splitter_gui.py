@@ -72,7 +72,7 @@ def split_drawings():
                                        regions[REGIONS[region]], revision)
         drawing_splitter.save_drawings(filename, num_of_pages, drawing_numbers, string_output_folder.get(),
                       revision)
-        if string_delete == "Yes":
+        if string_delete.get() == "Yes":
             drawing_splitter.delete_file(filename)
         print()
     print(f'Finished processing {len(pdf_files)} files.')
