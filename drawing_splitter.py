@@ -117,7 +117,8 @@ def delete_file(filename):
 
 if __name__ == '__main__':
     import user_options
-    args = user_options.parser.parse_args()
+    parser = user_options.parse_arguments()
+    args = parser.parse_args()
     print('Drawing Splitter\n')
     number_element = args.dwg_number_element
     pdf_files = get_filenames(args.input)
