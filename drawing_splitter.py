@@ -115,7 +115,7 @@ def delete_file(filename):
     print(f'Deleted file: {os.path.basename(filename)}')
 
 
-if __name__ == '__main__':
+def split():
     import user_options
     parser = user_options.parse_arguments()
     args = parser.parse_args()
@@ -159,3 +159,6 @@ if __name__ == '__main__':
             delete_file(filename)
         print()
     print(f'Finished processing {len(pdf_files)} files.')
+
+if __name__ == '__main__':
+    split()

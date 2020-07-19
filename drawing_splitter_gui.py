@@ -1,16 +1,23 @@
 #! /usr/bin/env python
 
 # GUI Interface for drawing_splitter.py using tkinter
+import os
+import threading
+
 from tkinter import *
 from tkinter.ttk import *
 import tkinter.filedialog
 import toml
 
+
+import drawing_splitter
 import user_options
+
 
 # Load settings.toml and use as defaults
 settings = user_options.load_settings_toml()
 
+REGIONS = {'Top Left': 'top-left', 'Top Right': 'top-right', 'Bottom Left': 'bot-right', 'Bottom Right': 'bot-right'}
 # Command functions functions
 # Browse for file and update entry box
 def browsefunc(entry):
@@ -20,12 +27,59 @@ def browsefunc(entry):
     entry.insert(0, folder)
     entry.config(state='disabled')
 
-# TODO: Add function for running splitter and saving toml
+# Save settings to settings.tom
 def save_config():
+    delete_and_revision = {'Yes': True, 'No': False}
+    regions = {'Top Left': 'top-left', 'Top Right': 'top-right', 'Bottom Left': 'bot-right', 'Bottom Right': 'bot-right'}
     settings = {}
     settings['dwg_number_element'] = string_dwg_number.get()
+    settings['input_folder'] = string_input_folder.get()
+    settings['output_folder'] = string_output_folder.get()
+    settings['delete'] = delete_and_revision[string_delete.get()]
+    settings['revision'] = delete_and_revision[string_revision.get()]
+    settings['region'] = REGIONS[string_region.get()]
     with open('settings.toml', 'w') as settings_file:
         settings_file.write(toml.dumps(settings))
+
+# TODO: Split drawings (Need to refactor drawing_splitter.py DRY)
+def split_drawings():
+    print('Drawing Splitter\n')
+    number_element = string_dwg_number.get()
+    pdf_files = drawing_splitter.get_filenames(string_input_folder.get())
+    print(f'Total files to process: {len(pdf_files)}')
+    print(f'Using drawing number element: {number_element}')
+    print(f'Checking region: {string_region.get()}\n')
+    for filename in pdf_files:
+        page_size = drawing_splitter.get_page_size(filename)
+        page_height = page_size[0]
+        page_width = page_size[1]
+        regions = {'top-left': (0, 0, page_width * 0.2, page_height * 0.5),
+                   'top-right': (page_width * 0.8, 0,
+                                 page_width, page_height * 0.5),
+                   'bot-left': (0, page_height * 0.5, page_width * 0.2,
+                                page_height),
+                   'bot-right': (page_width * 0.8, page_height * 0.5,
+                                 page_width, page_height),
+                   'all': (0, 0, page_width, page_height)}
+        print(f'Processing file: {os.path.basename(filename)}...', end='')
+        num_of_pages = drawing_splitter.get_pdf_length(filename)
+        region = string_region.get()
+        if string_revision.get() == "Yes":
+            revision = True
+        else:
+            revision = False
+        drawing_numbers = drawing_splitter.get_dwg_info(filename, num_of_pages, number_element,
+                                       regions[REGIONS[region]], revision)
+        drawing_splitter.save_drawings(filename, num_of_pages, drawing_numbers, string_output_folder.get(),
+                      revision)
+        if string_delete == "Yes":
+            drawing_splitter.delete_file(filename)
+        print()
+    print(f'Finished processing {len(pdf_files)} files.')
+
+def save_and_split():
+    save_config()
+    threading.Thread(target=split_drawings).start()
 
 # Create window
 window = Tk()
@@ -109,8 +163,7 @@ option_region.config(width=12)
 option_region.grid(row=7, column=1, sticky='w')
 
 # Start Button
-# TODO: Add command
-button_start = Button(master=input_frame, text='Split!', command=save_config)
+button_start = Button(master=input_frame, text='Split!', command=save_and_split)
 button_start.grid(row=7, column=5, sticky="e")
 
 window.mainloop()
