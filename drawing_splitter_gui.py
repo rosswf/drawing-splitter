@@ -43,7 +43,7 @@ def save_config():
 
 # TODO: Split drawings (Need to refactor drawing_splitter.py DRY)
 def split_drawings():
-    progress_bar.start(50)
+    progress_bar['value'] = 0
     #print('Drawing Splitter\n')
     number_element = string_dwg_number.get()
     pdf_files = drawing_splitter.get_filenames(string_input_folder.get())
@@ -67,14 +67,13 @@ def split_drawings():
         region = string_region.get()
         revision = bool(int(string_revision.get()))
         drawing_numbers = drawing_splitter.get_dwg_info(filename, num_of_pages, number_element,
-                                       regions[REGIONS[region]], revision)
+                                       regions[REGIONS[region]], revision, progress_bar)
         drawing_splitter.save_drawings(filename, num_of_pages, drawing_numbers, string_output_folder.get(),
                       revision)
         if bool(int(string_delete.get())):
             drawing_splitter.delete_file(filename)
         print()
     string_status.set(f'Finished processing {len(pdf_files)} files.')
-    progress_bar.stop()
 
 def save_and_split():
     save_config()
@@ -82,13 +81,13 @@ def save_and_split():
 
 # Create window
 window = Tk()
-window.geometry('420x320')
+window.geometry('500x220')
 window.resizable(False, False)
 window.title("Drawing Splitter")
 
 # Add program title
-label_program_header = Label(master=window, text='Drawing Splitter', font=('Calibri', 16, 'bold'))
-label_program_header.grid(row=0, column=0, columnspan=5, sticky='w', padx=5, pady=5)
+# label_program_header = Label(master=window, text='Drawing Splitter', font=('Calibri', 16, 'bold'))
+# label_program_header.grid(row=0, column=0, columnspan=5, sticky='w', padx=5, pady=5)
 
 # Create frame for inputs
 input_frame = Frame(master=window, borderwidth=1)
@@ -100,7 +99,7 @@ label_dwg_number = Label(master=input_frame, text='Number Element:', font=('Cali
 label_dwg_number.grid(row=0, column=0, pady=5)
 string_dwg_number = StringVar()
 entry_dwg_number = Entry(master=input_frame, textvariable=string_dwg_number)
-entry_dwg_number.grid(row=0, column=1, pady=5, sticky='nsew', columnspan=3)
+entry_dwg_number.grid(row=0, column=1, pady=5, sticky='nsew', columnspan=2)
 string_dwg_number.set(settings['dwg_number_element'])
 
 # Entry box for input folder path, with button
@@ -108,9 +107,9 @@ label_input_folder = Label(master=input_frame, text='Input Folder:', font=('Cali
 label_input_folder.grid(row=1, column=0, sticky='e', pady=5)
 string_input_folder = StringVar()
 entry_input_folder = Entry(master=input_frame, state='disabled', width=50, textvariable=string_input_folder)
-entry_input_folder.grid(row=1, column=1, pady=5, columnspan=5, sticky='nsew')
+entry_input_folder.grid(row=1, column=1, pady=5, columnspan=4, sticky='nsew')
 button_input_folder = Button(master=input_frame, text='Browse...', command=lambda: browsefunc(entry_input_folder))
-button_input_folder.grid(row=2, column=5, sticky='e')
+button_input_folder.grid(row=1, column=5, sticky='e')
 string_input_folder.set(settings['input_folder'])
 
 # Entry box for output folder path, with button
@@ -118,9 +117,9 @@ label_output_folder = Label(master=input_frame, text='Output Folder:', font=('Ca
 label_output_folder.grid(row=3, column=0, sticky='e', pady=5)
 string_output_folder = StringVar()
 entry_output_folder = Entry(master=input_frame, state='disabled', width=50, textvariable=string_output_folder)
-entry_output_folder.grid(row=3, column=1, pady=5, columnspan=5, sticky='nsew')
+entry_output_folder.grid(row=3, column=1, pady=5, columnspan=4, sticky='nsew')
 button_output_folder = Button(master=input_frame, text='Browse...', command=lambda: browsefunc(entry_output_folder))
-button_output_folder.grid(row=4, column=5, sticky="e")
+button_output_folder.grid(row=3, column=5, sticky="e")
 string_output_folder.set(settings['output_folder'])
 
 # Drop down menu for delete files after processing
@@ -165,6 +164,11 @@ option_region.grid(row=7, column=1, sticky='w')
 button_start = Button(master=input_frame, text='Split!', command=save_and_split)
 button_start.grid(row=7, column=5, sticky="e")
 
+
+# Add progress bar
+progress_bar = Progressbar(master=input_frame, orient='horizontal', length=490, mode='determinate')
+progress_bar.grid(row=8, column=0, columnspan=6, pady=5)
+
 # Status label
 label_status = Label(master=input_frame, text='Status:', font=('Calibri', 10, 'bold'))
 label_status.grid(row=9, column=0, sticky='e', pady=5)
@@ -172,9 +176,5 @@ string_status = StringVar()
 string_status.set('Not Running')
 label_actual_status = Label(master=input_frame, textvariable=string_status)
 label_actual_status.grid(row=9, column=1, columnspan=5, sticky='w')
-
-# Add progress bar
-progress_bar = Progressbar(master=input_frame, orient='horizontal', length=410, mode='indeterminate')
-progress_bar.grid(row=8, column=0, columnspan=6, pady=5)
 
 window.mainloop()

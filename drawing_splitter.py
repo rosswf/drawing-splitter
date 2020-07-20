@@ -26,7 +26,7 @@ def get_pdf_length(filename):
         return num_of_pages
 
 
-def get_dwg_info(filename, num_of_pages, number_element, region, rev):
+def get_dwg_info(filename, num_of_pages, number_element, region, rev, progress_bar=None):
     """Return a list of drawing numbers, read from each page of a PDF."""
     drawing_numbers = []
     for page_number in range(num_of_pages):
@@ -56,6 +56,8 @@ def get_dwg_info(filename, num_of_pages, number_element, region, rev):
                     print(f'{rev_number}', end='')
                 except (TypeError, AttributeError):
                     print('Revision not found.', end='')
+        if progress_bar is not None:
+            progress_bar['value'] = (page_number + 1) / num_of_pages * 100
     return drawing_numbers
 
 
