@@ -30,7 +30,6 @@ def browsefunc(entry):
 
 # Save settings to settings.toml
 def save_config():
-    
     regions = {'Top Left': 'top-left', 'Top Right': 'top-right', 'Bottom Left': 'bot-right', 'Bottom Right': 'bot-right'}
     settings = {}
     settings['dwg_number_element'] = string_dwg_number.get()
@@ -44,7 +43,6 @@ def save_config():
 
 # TODO: Split drawings (Need to refactor drawing_splitter.py DRY)
 def split_drawings():
-    progress_bar['value'] = 0
     button_start.config(state='disabled')
     #print('Drawing Splitter\n')
     number_element = string_dwg_number.get()
@@ -53,6 +51,7 @@ def split_drawings():
     #print(f'Using drawing number element: {number_element}')
     #print(f'Checking region: {string_region.get()}\n')
     for filename in pdf_files:
+        progress_bar['value'] = 0
         page_size = drawing_splitter.get_page_size(filename)
         page_height = page_size[0]
         page_width = page_size[1]
