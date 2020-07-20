@@ -26,7 +26,8 @@ def get_pdf_length(filename):
         return num_of_pages
 
 
-def get_dwg_info(filename, num_of_pages, number_element, region, rev, progress_bar=None):
+def get_dwg_info(filename, num_of_pages, number_element, region, rev,
+                 progress_bar=None):
     """Return a list of drawing numbers, read from each page of a PDF."""
     drawing_numbers = []
     for page_number in range(num_of_pages):
@@ -161,6 +162,7 @@ def split():
             delete_file(filename)
         print()
     print(f'Finished processing {len(pdf_files)} files.')
+
 
 if __name__ == '__main__':
     split()
