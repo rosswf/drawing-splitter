@@ -30,6 +30,7 @@ def browsefunc(entry):
 
 # Save settings to settings.toml
 def save_config():
+    
     regions = {'Top Left': 'top-left', 'Top Right': 'top-right', 'Bottom Left': 'bot-right', 'Bottom Right': 'bot-right'}
     settings = {}
     settings['dwg_number_element'] = string_dwg_number.get()
@@ -44,6 +45,7 @@ def save_config():
 # TODO: Split drawings (Need to refactor drawing_splitter.py DRY)
 def split_drawings():
     progress_bar['value'] = 0
+    button_start.config(state='disabled')
     #print('Drawing Splitter\n')
     number_element = string_dwg_number.get()
     pdf_files = drawing_splitter.get_filenames(string_input_folder.get())
@@ -74,6 +76,7 @@ def split_drawings():
             drawing_splitter.delete_file(filename)
         print()
     string_status.set(f'Finished processing {len(pdf_files)} files.')
+    button_start.config(state='normal')
 
 def save_and_split():
     save_config()

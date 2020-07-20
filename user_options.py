@@ -50,28 +50,16 @@ def parse_arguments():
                     help="""Folder to save the PDF files in
                          (DEFAULT: Current folder)""",
                     default=settings['output_folder'])
-    # If settings.toml is set to true, default needs to be true
-    if settings['delete']:
-        parser.add_argument('-d',
+    parser.add_argument('-d',
                         '--delete',
                         help="""Delete original files after processing""",
-                        action='store_false')
-    else:
-        parser.add_argument('-d',
-                        '--delete',
-                        help="""Delete original files after processing""",
-                        action='store_true')
-    # If settings.toml is set to true, default needs to be true
-    if settings['revision']:
-        parser.add_argument('-r',
+                        action='store_true',
+                        default=settings['delete'])
+    parser.add_argument('-r',
                         '--revision',
                         help="""Save drawings in folders by revision""",
-                        action='store_false')
-    else:
-        parser.add_argument('-r',
-                        '--revision',
-                        help="""Save drawings in folders by revision""",
-                        action='store_true')
+                        action='store_true',
+                        default=settings['revision'])
 
     region_group = parser.add_mutually_exclusive_group()
     region_group.add_argument('-p',
