@@ -97,8 +97,8 @@ input_frame.grid(row=1, column=0, padx=5, pady=5)
 
 # Create items for input_frame
 # Entry box for dwg_number_element
-label_dwg_number = Label(master=input_frame, text='Number Element:', font=('Calibri', 10, 'bold'))
-label_dwg_number.grid(row=0, column=0, pady=5)
+label_dwg_number = Label(master=input_frame, text='Number Section:', font=('Calibri', 10, 'bold'))
+label_dwg_number.grid(row=0, column=0, pady=5, sticky='e')
 string_dwg_number = StringVar()
 entry_dwg_number = Entry(master=input_frame, textvariable=string_dwg_number)
 entry_dwg_number.grid(row=0, column=1, pady=5, sticky='nsew', columnspan=2)
