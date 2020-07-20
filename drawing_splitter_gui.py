@@ -28,23 +28,21 @@ def browsefunc(entry):
     entry.insert(0, folder)
     entry.config(state='disabled')
 
-# Save settings to settings.tom
+# Save settings to settings.toml
 def save_config():
-    delete_and_revision = {'Yes': True, 'No': False}
     regions = {'Top Left': 'top-left', 'Top Right': 'top-right', 'Bottom Left': 'bot-right', 'Bottom Right': 'bot-right'}
     settings = {}
     settings['dwg_number_element'] = string_dwg_number.get()
     settings['input_folder'] = string_input_folder.get()
     settings['output_folder'] = string_output_folder.get()
-    settings['delete'] = delete_and_revision[string_delete.get()]
-    settings['revision'] = delete_and_revision[string_revision.get()]
+    settings['delete'] = bool(int(string_delete.get()))
+    settings['revision'] = bool(int(string_revision.get()))
     settings['region'] = REGIONS[string_region.get()]
     with open('settings.toml', 'w') as settings_file:
         settings_file.write(toml.dumps(settings))
 
 # TODO: Split drawings (Need to refactor drawing_splitter.py DRY)
 def split_drawings():
-    progress_bar.grid(row=8, column=0, columnspan=6, pady=5)
     progress_bar.start(50)
     #print('Drawing Splitter\n')
     number_element = string_dwg_number.get()
@@ -67,20 +65,16 @@ def split_drawings():
         string_status.set(f'Processing file: {os.path.basename(filename)}...')
         num_of_pages = drawing_splitter.get_pdf_length(filename)
         region = string_region.get()
-        if string_revision.get() == "Yes":
-            revision = True
-        else:
-            revision = False
+        revision = bool(int(string_revision.get()))
         drawing_numbers = drawing_splitter.get_dwg_info(filename, num_of_pages, number_element,
                                        regions[REGIONS[region]], revision)
         drawing_splitter.save_drawings(filename, num_of_pages, drawing_numbers, string_output_folder.get(),
                       revision)
-        if string_delete.get() == "Yes":
+        if bool(int(string_delete.get())):
             drawing_splitter.delete_file(filename)
         print()
     string_status.set(f'Finished processing {len(pdf_files)} files.')
     progress_bar.stop()
-    progress_bar.grid_forget()
 
 def save_and_split():
     save_config()
@@ -88,7 +82,7 @@ def save_and_split():
 
 # Create window
 window = Tk()
-window.geometry('420x360')
+window.geometry('420x320')
 window.resizable(False, False)
 window.title("Drawing Splitter")
 
@@ -134,22 +128,22 @@ label_delete = Label(master=input_frame, text='Delete files:', font=('Calibri', 
 label_delete.grid(row=5, column=0, sticky='e', pady=5)
 string_delete = StringVar()
 if settings['delete']:
-    string_delete.set('Yes')
+    string_delete.set(True)
 else:
-    string_delete.set('No')
-option_delete = OptionMenu(input_frame, string_delete, string_delete.get(), 'Yes', 'No')
-option_delete.grid(row=5, column=1, sticky='w')
+    string_delete.set(False)
+option_delete = Checkbutton(input_frame, variable=string_delete, onvalue=True, offvalue=False)
+option_delete.grid(row=5, column=1, sticky='w', padx=5)
 
 # Drop down box for saving by revision
 label_revision = Label(master=input_frame, text='Save by revision:', font=('Calibri', 10, 'bold'))
-label_revision.grid(row=6, column=0, sticky='e', pady=5)
+label_revision.grid(row=5, column=2, sticky='e', pady=5)
 string_revision = StringVar()
 if settings['revision']:
-    string_revision.set('Yes')
+    string_revision.set(True)
 else:
-    string_revision.set('No')
-option_revision = OptionMenu(input_frame, string_revision, string_revision.get(), 'Yes', 'No')
-option_revision.grid(row=6, column=1, sticky='w')
+    string_revision.set(False)
+option_revision = Checkbutton(input_frame, variable=string_revision, onvalue=True, offvalue=False)
+option_revision.grid(row=5, column=3, sticky='w', padx=5)
 
 # Drop down box for region
 label_region = Label(master=input_frame, text='Region:', font=('Calibri', 10, 'bold'))
@@ -181,5 +175,6 @@ label_actual_status.grid(row=9, column=1, columnspan=5, sticky='w')
 
 # Add progress bar
 progress_bar = Progressbar(master=input_frame, orient='horizontal', length=410, mode='indeterminate')
+progress_bar.grid(row=8, column=0, columnspan=6, pady=5)
 
 window.mainloop()
