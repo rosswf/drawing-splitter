@@ -19,7 +19,8 @@ import user_options
 settings = user_options.load_settings_toml()
 
 REGIONS = {'Top Left': 'top-left', 'Top Right': 'top-right',
-           'Bottom Left': 'bot-right', 'Bottom Right': 'bot-right'}
+           'Bottom Left': 'bot-right', 'Bottom Right': 'bot-right',
+           'All': 'all'}
 
 
 # Command functions functions
@@ -53,6 +54,8 @@ def split_drawings():
     # print(f'Total files to process: {len(pdf_files)}')
     for i, filename in enumerate(pdf_files, start=1):
         progress_bar['value'] = 0
+        string_status.set(f'Processing file: {i} of {len(pdf_files)} - '
+                          f'{os.path.basename(filename)}...')
         page_size = drawing_splitter.get_page_size(filename)
         page_height = page_size[0]
         page_width = page_size[1]
@@ -64,8 +67,6 @@ def split_drawings():
                    'bot-right': (page_width * 0.8, page_height * 0.5,
                                  page_width, page_height),
                    'all': (0, 0, page_width, page_height)}
-        string_status.set(f'Processing file: {i} of {len(pdf_files)} - '
-                          f'{os.path.basename(filename)}...')
         num_of_pages = drawing_splitter.get_pdf_length(filename)
         region = string_region.get()
         revision = bool(int(string_revision.get()))
@@ -171,9 +172,11 @@ elif settings['region'] == 'bot-left':
     string_region.set('Bottom Left')
 elif settings['region'] == 'bot-right':
     string_region.set('Bottom Right')
+elif settings['region'] == 'all':
+    string_region.set('All')
 option_region = OptionMenu(input_frame, string_region, string_region.get(),
                            'Top Left', 'Top Right', 'Bottom Left',
-                           'Bottom Right')
+                           'Bottom Right', 'All')
 option_region.config(width=12)
 option_region.grid(row=7, column=1, sticky='w')
 
