@@ -51,7 +51,7 @@ def split_drawings():
     number_element = string_dwg_number.get()
     pdf_files = drawing_splitter.get_filenames(string_input_folder.get())
     # print(f'Total files to process: {len(pdf_files)}')
-    for filename in pdf_files:
+    for i, filename in enumerate(pdf_files, start=1):
         progress_bar['value'] = 0
         page_size = drawing_splitter.get_page_size(filename)
         page_height = page_size[0]
@@ -64,7 +64,8 @@ def split_drawings():
                    'bot-right': (page_width * 0.8, page_height * 0.5,
                                  page_width, page_height),
                    'all': (0, 0, page_width, page_height)}
-        string_status.set(f'Processing file: {os.path.basename(filename)}...')
+        string_status.set(f'Processing file: {i} of {len(pdf_files)} - '
+                          f'{os.path.basename(filename)}...')
         num_of_pages = drawing_splitter.get_pdf_length(filename)
         region = string_region.get()
         revision = bool(int(string_revision.get()))
@@ -76,7 +77,6 @@ def split_drawings():
                                        string_output_folder.get(), revision)
         if bool(int(string_delete.get())):
             drawing_splitter.delete_file(filename)
-        print()
     string_status.set(f'Finished processing {len(pdf_files)} files.')
     button_start.config(state='normal')
 
@@ -98,7 +98,7 @@ input_frame.grid(row=1, column=0, padx=5, pady=5)
 
 # Create items for input_frame
 # Entry box for dwg_number_element
-label_dwg_number = Label(master=input_frame, text='Number Section:',
+label_dwg_number = Label(master=input_frame, text='Dwg Number Field:',
                          font=('Calibri', 10, 'bold'))
 label_dwg_number.grid(row=0, column=0, pady=5, sticky='e')
 string_dwg_number = StringVar()
